@@ -90,7 +90,7 @@ class MyNeuron:
             Y[idxNeg] = 0  
         return Y
     
-clf=MyNeuron("Heaviside")
+clf=MyNeuron("tanh")
 datos = pd.read_csv('training.csv')
 X = datos.iloc[:,[0,1]]
 Y = datos.iloc[:,2]
