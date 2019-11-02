@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Oct 30 13:14:11 2019
+Created on Fri Nov  1 17:38:34 2019
 
-@author: Martin Marquez Cervantes
+@author: Martín Márquez Cervantes
 """
+print("UNion de las tres compuertas, aun por trabajar")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -36,11 +37,13 @@ class MyNeuron:
         #guardamos w modificada en wG para despues utilizarla en algoritmo predictivo
         self.WG=w             
         #impersión de resultados
+        print("\n\n")
         print("w Inicial: "+str(wInicial))
         print("w Final: "+str(w))
         #graficación de vectores
         plt.plot(wInicial,'.-')
         plt.plot(w,'.-')
+        print("\n\n")
         print('Linea azul W Inicial')
         print('Linea naranja W Final aplicando algoritmo')
         
@@ -50,12 +53,11 @@ class MyNeuron:
         #calcular y la salida de la prediccion
         y=np.dot(self.WG,xTest[i]) #producto interno entre w y x
         #clasificación
-        if self.funcAct=="Heaviside":
-            return self.heaviside(y)
-        if self.funcAct=="tanh":
-            return self.tanh(y)
-        if self.funcAct=="sigmoid":
-            return self.sigmoid(y)
+        if y>=0:
+            return 1
+        else:
+            return 0
+        #return  1/(1+np.exp(-y))
     
     def comparar(self,XT,Predicciones):
         TP = 0
@@ -91,39 +93,11 @@ class MyNeuron:
         #calculo de F-Score
         FScore = 2*( (Presicion*Recall)/(Presicion+Recall) )
         print("F-Score : "+str(FScore))
-
-    def __init__(self,funcActivation):
-        self.funcAct = funcActivation
-        
-    def heaviside(self,x):
-        if x>=0:
-            return 1
-        else:
-            return -1
-    def tanh(self,x):
-        return np.sinh(x)/np.cosh(x)
-    def sigmoid(self,x):
-        return  1/(1+np.exp(-x))
-    
-    def transformPredictions(self,Y):
-        if self.funcAct=='Heaviside':
-            idxNeg = Y ==-1
-            Y[idxNeg]=0
-        elif self.funcAct=='tanh':
-            idxPos = Y >=0
-            idxNeg = Y <0
-            Y[idxPos] = 1
-            Y[idxNeg] = 0            
-        else:#sigmoid
-            idxPos = Y >=0.5
-            idxNeg = Y < 0.5
-            Y[idxPos] = 1
-            Y[idxNeg] = 0  
-        return Y
         
         
-clf = MyNeuron("sigmoid")
-#Entradas
+        
+clf = MyNeuron()
+#Entradas AND y OR
 TotalElementos = 10
 ceros = np.random.uniform(0,0.4,TotalElementos)
 unos = np.random.uniform(0.75,0.9,TotalElementos)
@@ -138,11 +112,27 @@ X = np.append(X,ceros)
 X = np.append(X,unos)
 X = X.reshape(numRenglones,2,order=True)
 
-Y = np.zeros([TotalElementos*3,1])
-Y = np.append(Y,np.ones([TotalElementos,1]))
-Y.reshape(numRenglones,1)
+#Entradas Not
+unosNot = np.random.uniform(0.75,0.9,TotalElementos*2)
+#Conjunto de datos entrenamiento
+Xnot = np.append(ceros,ceros)
+Xnot = np.append(Xnot,unosNot)
+Xnot = Xnot.reshape(numRenglones,1)
 
-clf.training(X,Y)
+#Clases para And
+YAND = np.zeros([TotalElementos*3,1])
+YAND = np.append(Y,np.ones([TotalElementos,1]))
+YAND.reshape(numRenglones,1)
+#Clases para Or
+YOR = np.zeros([TotalElementos,1])
+YOR = np.append(Y,np.ones([TotalElementos*3,1]))
+YOR.reshape(numRenglones,1)
+#Clases para Not
+YNOT = np.zeros([TotalElementos*2,1])
+YNOT = np.append(Y,np.ones([TotalElementos*2,1]))
+YNOT.reshape(numRenglones,1)
+
+clf.training(X,YAND)
 
 #conjuntos de datos de prueba 20 elementos
 cerosTest =  np.zeros(5)
@@ -167,27 +157,8 @@ for i in range(XT.shape[0]):
     Predicciones.append(clf.predic(i,XT))
 Predicciones = np.array(Predicciones)
 #impresión
+print("\n\n")
 for i in range(XT.shape[0]):
     print("Indice " +str(i) +" prediccion " +str(Predicciones[i]))
 #Impresión en el método de los calculos Clasificación precisión, precisión,recall y F-score
-Predicciones = clf.transformPredictions(Predicciones)
-
 clf.comparar(YT,Predicciones)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

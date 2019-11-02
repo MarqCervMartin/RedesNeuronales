@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Oct 30 13:14:11 2019
+Created on Fri Nov  1 18:47:40 2019
 
-@author: Martin Marquez Cervantes
+@author: mar
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,11 +36,13 @@ class MyNeuron:
         #guardamos w modificada en wG para despues utilizarla en algoritmo predictivo
         self.WG=w             
         #impersión de resultados
+        print("\n\n")
         print("w Inicial: "+str(wInicial))
         print("w Final: "+str(w))
         #graficación de vectores
         plt.plot(wInicial,'.-')
         plt.plot(w,'.-')
+        print("\n\n")
         print('Linea azul W Inicial')
         print('Linea naranja W Final aplicando algoritmo')
         
@@ -91,7 +93,7 @@ class MyNeuron:
         #calculo de F-Score
         FScore = 2*( (Presicion*Recall)/(Presicion+Recall) )
         print("F-Score : "+str(FScore))
-
+    
     def __init__(self,funcActivation):
         self.funcAct = funcActivation
         
@@ -122,42 +124,34 @@ class MyNeuron:
         return Y
         
         
-clf = MyNeuron("sigmoid")
-#Entradas
+clf = MyNeuron("tanh")
+#Entradas Not
 TotalElementos = 10
 ceros = np.random.uniform(0,0.4,TotalElementos)
-unos = np.random.uniform(0.75,0.9,TotalElementos)
+unos = np.random.uniform(0.75,0.9,TotalElementos*2)
 numRenglones = ceros.shape[0]*4
 #Conjunto de datos entrenamiento
 X = np.append(ceros,ceros)
 X = np.append(X,unos)
-X = np.append(X,unos)
-X = np.append(X,ceros)
-X = np.append(X,unos)
-X = np.append(X,ceros)
-X = np.append(X,unos)
-X = X.reshape(numRenglones,2,order=True)
+X = X.reshape(numRenglones,1)
 
-Y = np.zeros([TotalElementos*3,1])
-Y = np.append(Y,np.ones([TotalElementos,1]))
-Y.reshape(numRenglones,1)
+#Clases para Not
+YNOT = np.zeros([TotalElementos*2,1])
+YNOT = np.append(YNOT,np.ones([TotalElementos*2,1]))
+YNOT.reshape(numRenglones,1)
 
-clf.training(X,Y)
+clf.training(X,YNOT)
 
 #conjuntos de datos de prueba 20 elementos
 cerosTest =  np.zeros(5)
-unosTest = np.ones(5)
+unosTest = np.ones(10)
 #Conjunto de datos
 XT = np.append(cerosTest,cerosTest)
 XT = np.append(XT,unosTest)
-XT = np.append(XT,unosTest)
-XT = np.append(XT,cerosTest)
-XT = np.append(XT,unosTest)
-XT = np.append(XT,cerosTest)
-XT = np.append(XT,unosTest)
-XT = XT.reshape(20,2,order=True)
-YT = np.zeros(15)
-YT = np.append(YT,np.ones(5))
+XT = XT.reshape(20,1)
+#clases not de prueba
+YT = np.zeros(10)
+YT = np.append(YT,np.ones(10))
 YT.reshape(YT.size,1)
 
 XT=np.append(np.ones((XT.shape[0],1)),XT,axis=1)
@@ -167,27 +161,11 @@ for i in range(XT.shape[0]):
     Predicciones.append(clf.predic(i,XT))
 Predicciones = np.array(Predicciones)
 #impresión
+print("\n\n")
 for i in range(XT.shape[0]):
     print("Indice " +str(i) +" prediccion " +str(Predicciones[i]))
-#Impresión en el método de los calculos Clasificación precisión, precisión,recall y F-score
+
 Predicciones = clf.transformPredictions(Predicciones)
 
+#Impresión en el método de los calculos Clasificación precisión, precisión,recall y F-score
 clf.comparar(YT,Predicciones)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
