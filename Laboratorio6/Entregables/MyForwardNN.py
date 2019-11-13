@@ -58,7 +58,7 @@ class MyForwardNN:
         for i in range(HiddenLayer+1):
             print("\n")
             print("W"+str(i))
-            print(W[i])
+            print(W[i])    
         
             
         
