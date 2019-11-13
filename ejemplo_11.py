@@ -13,11 +13,6 @@ Capas ocultas
 Salidas: 3
 Función de activacion logistica
 """
-from __future__ import print_function
-import torch
-x = torch.rand(5, 3)
-print(x)
-
 #Arquitectura
 import numpy as np
 def funcActivacion(x):
